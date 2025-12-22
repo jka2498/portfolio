@@ -52,9 +52,7 @@ public class ExperiencesStack extends Stack {
                 .functionName("GetExperiences")
                 .runtime(Runtime.JAVA_21)
                 .handler("com.jan.experiences.GetExperiencesHandler")
-                .code(Code.fromAsset(
-                        "../services/api/experiences/target/experiences-1.0-SNAPSHOT.jar"
-                ))
+                .code(Code.fromAsset("../services/api/experiences/target/experiences.jar"))
                 .environment(Map.of(
                         "TABLE_NAME", experiencesTable.getTableName()
                 ))
