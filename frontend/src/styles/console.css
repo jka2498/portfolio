@@ -1,0 +1,45 @@
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #0f1b2a;
+  color: #fff;
+}
+
+.aws-layout {
+  display: flex;
+  height: 100vh;
+}
+
+.aws-sidebar {
+  width: 220px;
+  background: #161e2e;
+  padding: 16px;
+}
+
+.nav-item {
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+
+.nav-item.active {
+  background: #0073bb;
+}
+
+.aws-content {
+  flex: 1;
+  padding: 24px;
+}
+
+.aws-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.aws-table th,
+.aws-table td {
+  padding: 8px;
+  border-bottom: 1px solid #2a3446;
+}
