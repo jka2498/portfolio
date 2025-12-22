@@ -1,27 +1,23 @@
 package com.jan;
 
-import java.util.List;
-import java.util.Map;
-
+import software.amazon.awscdk.Duration;
+import software.amazon.awscdk.RemovalPolicy;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
-import software.amazon.awscdk.RemovalPolicy;
-
 import software.amazon.awscdk.aws_apigatewayv2_integrations.HttpLambdaIntegration;
+import software.amazon.awscdk.services.apigatewayv2.AddRoutesOptions;
 import software.amazon.awscdk.services.apigatewayv2.HttpApi;
 import software.amazon.awscdk.services.apigatewayv2.HttpMethod;
-import software.amazon.awscdk.services.apigatewayv2.AddRoutesOptions;
-
 import software.amazon.awscdk.services.dynamodb.Attribute;
 import software.amazon.awscdk.services.dynamodb.AttributeType;
 import software.amazon.awscdk.services.dynamodb.BillingMode;
 import software.amazon.awscdk.services.dynamodb.Table;
-
 import software.amazon.awscdk.services.lambda.Code;
 import software.amazon.awscdk.services.lambda.Function;
-import software.amazon.awscdk.services.lambda.Runtime;
-
 import software.constructs.Construct;
+
+import java.util.List;
+import java.util.Map;
 
 public class ExperiencesStack extends Stack {
 
@@ -53,10 +49,13 @@ public class ExperiencesStack extends Stack {
                 .runtime(Runtime.JAVA_21)
                 .handler("com.jan.experiences.GetExperiencesHandler")
                 .code(Code.fromAsset("../services/api/experiences/target/experiences.jar"))
+                .memorySize(1024)
+                .timeout(Duration.seconds(10))
                 .environment(Map.of(
                         "TABLE_NAME", experiencesTable.getTableName()
                 ))
                 .build();
+
 
         experiencesTable.grantReadData(getExperiencesFunction);
 
