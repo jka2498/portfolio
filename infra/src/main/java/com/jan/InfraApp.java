@@ -6,7 +6,8 @@ public class InfraApp {
     public static void main(final String[] args) {
         App app = new App();
 
-        new ExperiencesStack(app, "ExperiencesStack");
+    new ExperiencesStack(app, "ExperiencesStack");
+    new FrontendStack(app, "FrontendStack");
 
         app.synth();
     }
