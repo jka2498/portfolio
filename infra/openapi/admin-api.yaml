@@ -34,6 +34,32 @@ paths:
         contentHandling: "CONVERT_TO_TEXT"
         type: "aws_proxy"
         timeoutInMillis: 29000
+    options:
+      summary: CORS support
+      responses:
+        "200":
+          description: CORS OK
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{ \"statusCode\": 200 }"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'https://d18ckr4m1gi0vr.cloudfront.net'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+              method.response.header.Access-Control-Allow-Methods: "'OPTIONS,POST'"
   /experiences/{id}:
     put:
       summary: Update an experience
@@ -73,6 +99,32 @@ paths:
         contentHandling: "CONVERT_TO_TEXT"
         type: "aws_proxy"
         timeoutInMillis: 29000
+    options:
+      summary: CORS support
+      responses:
+        "200":
+          description: CORS OK
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{ \"statusCode\": 200 }"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'https://d18ckr4m1gi0vr.cloudfront.net'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+              method.response.header.Access-Control-Allow-Methods: "'OPTIONS,POST'"
 
 components:
   schemas:

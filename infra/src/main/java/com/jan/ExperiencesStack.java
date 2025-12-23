@@ -5,10 +5,8 @@ import static software.amazon.awscdk.services.apigatewayv2.CorsHttpMethod.OPTION
 
 import java.util.List;
 import java.util.Map;
-import software.amazon.awscdk.Duration;
-import software.amazon.awscdk.RemovalPolicy;
-import software.amazon.awscdk.Stack;
-import software.amazon.awscdk.StackProps;
+
+import software.amazon.awscdk.*;
 import software.amazon.awscdk.aws_apigatewayv2_integrations.HttpLambdaIntegration;
 import software.amazon.awscdk.services.apigatewayv2.AddRoutesOptions;
 import software.amazon.awscdk.services.apigatewayv2.CorsPreflightOptions;
@@ -64,12 +62,15 @@ public class ExperiencesStack extends Stack {
     // ------------------------------------------------------------
     // Public API Gateway (HTTP API)
     // ------------------------------------------------------------
+
+    String frontendUrl = Fn.importValue("FrontendCloudFrontUrl");
+
     HttpApi api =
         HttpApi.Builder.create(this, "PortfolioApi")
             .apiName("PortfolioApi")
             .corsPreflight(
                 CorsPreflightOptions.builder()
-                    .allowOrigins(List.of("http://localhost:5173"))
+                    .allowOrigins(List.of("http://localhost:5173", frontendUrl))
                     .allowMethods(List.of(GET, OPTIONS))
                     .allowHeaders(List.of("*"))
                     .build())

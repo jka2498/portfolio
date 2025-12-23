@@ -1,18 +1,17 @@
+import { buildPublicApiUrl } from './apiConfig'
+
 export interface Experience {
-  id: string;
-  role: string;
-  company: string;
-  state?: string;
-  startYear?: number;
+  id: string
+  role: string
+  company: string
+  state?: string
+  startYear?: number
 }
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
 export async function fetchExperiences(): Promise<Experience[]> {
-
-  const res = await fetch(`${API_BASE}/experiences`);
+  const res = await fetch(buildPublicApiUrl('/experiences'))
   if (!res.ok) {
-    throw new Error("Failed to fetch experiences");
+    throw new Error('Failed to fetch experiences')
   }
-  return res.json();
+  return res.json()
 }

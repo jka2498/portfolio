@@ -5,12 +5,11 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
+import java.util.Map;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class UpdateExperienceHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -19,7 +18,6 @@ public class UpdateExperienceHandler
     private static final ObjectMapper mapper = new ObjectMapper();
 
     private static final String TABLE_NAME = System.getenv("TABLE_NAME");
-    private static final String ADMIN_KEY = System.getenv("ADMIN_KEY");
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(

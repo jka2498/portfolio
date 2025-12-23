@@ -4,9 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import software.amazon.awscdk.*;
-import software.amazon.awscdk.services.apigateway.ApiDefinition;
-import software.amazon.awscdk.services.apigateway.CfnStage;
-import software.amazon.awscdk.services.apigateway.SpecRestApi;
+import software.amazon.awscdk.services.apigateway.*;
 import software.amazon.awscdk.services.cognito.*;
 import software.amazon.awscdk.services.dynamodb.ITable;
 import software.amazon.awscdk.services.dynamodb.Table;
@@ -43,7 +41,10 @@ public class AdminApiStack extends Stack {
             .code(Code.fromAsset("../services/api/admin/target/admin.jar"))
             .memorySize(1024)
             .timeout(Duration.seconds(10))
-            .environment(Map.of("TABLE_NAME", experiencesTable.getTableName()))
+            .environment(
+                Map.of(
+                    "TABLE_NAME", experiencesTable.getTableName(),
+                    "FRONTEND_ORIGIN", Fn.importValue("FrontendCloudFrontUrl")))
             .build();
 
     // WRITE permissions only
@@ -57,7 +58,10 @@ public class AdminApiStack extends Stack {
             .code(Code.fromAsset("../services/api/admin/target/admin.jar"))
             .memorySize(1024)
             .timeout(Duration.seconds(10))
-            .environment(Map.of("TABLE_NAME", experiencesTable.getTableName()))
+            .environment(
+                Map.of(
+                    "TABLE_NAME", experiencesTable.getTableName(),
+                    "FRONTEND_ORIGIN", Fn.importValue("FrontendCloudFrontUrl")))
             .build();
 
     // WRITE permissions only
@@ -71,6 +75,31 @@ public class AdminApiStack extends Stack {
             .restApiName("PortfolioAdminApi")
             .apiDefinition(ApiDefinition.fromAsset("openapi/admin-api.yaml"))
             .build();
+
+    String frontendUrl = Fn.importValue("FrontendCloudFrontUrl");
+    String quotedFrontendUrl = "'" + frontendUrl + "'";
+
+    adminApi.addGatewayResponse(
+        "Cors4xx",
+        GatewayResponseOptions.builder()
+            .type(ResponseType.DEFAULT_4_XX)
+            .responseHeaders(
+                Map.of(
+                    "Access-Control-Allow-Origin", quotedFrontendUrl,
+                    "Access-Control-Allow-Headers", "'Content-Type,Authorization'",
+                    "Access-Control-Allow-Methods", "'OPTIONS,GET,POST,PUT'"))
+            .build());
+
+    adminApi.addGatewayResponse(
+        "Cors5xx",
+        GatewayResponseOptions.builder()
+            .type(ResponseType.DEFAULT_5_XX)
+            .responseHeaders(
+                Map.of(
+                    "Access-Control-Allow-Origin", quotedFrontendUrl,
+                    "Access-Control-Allow-Headers", "'Content-Type,Authorization'",
+                    "Access-Control-Allow-Methods", "'OPTIONS,GET,POST,PUT'"))
+            .build());
 
     // ------------------------------------------------------------
     // Allow API Gateway → Lambda
@@ -104,8 +133,6 @@ public class AdminApiStack extends Stack {
             .build();
 
     adminApi.getDeploymentStage().getNode().addDependency(userPool);
-
-    String frontendUrl = Fn.importValue("FrontendCloudFrontUrl");
 
     UserPoolClient userPoolClient =
         userPool.addClient(
