@@ -9,7 +9,6 @@ export interface Experience {
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export async function fetchExperiences(): Promise<Experience[]> {
-  console.log("API_BASE =", import.meta.env.VITE_API_BASE_URL);
 
   const res = await fetch(`${API_BASE}/experiences`);
   if (!res.ok) {
