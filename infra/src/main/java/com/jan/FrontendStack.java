@@ -1,11 +1,10 @@
 package com.jan;
 
 import java.util.List;
-import software.amazon.awscdk.RemovalPolicy;
-import software.amazon.awscdk.Stack;
-import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.*;
 import software.amazon.awscdk.services.cloudfront.BehaviorOptions;
 import software.amazon.awscdk.services.cloudfront.Distribution;
+import software.amazon.awscdk.services.cloudfront.ErrorResponse;
 import software.amazon.awscdk.services.cloudfront.ViewerProtocolPolicy;
 import software.amazon.awscdk.services.cloudfront.origins.S3BucketOrigin;
 import software.amazon.awscdk.services.s3.BlockPublicAccess;
@@ -44,6 +43,20 @@ public class FrontendStack extends Stack {
                     .viewerProtocolPolicy(ViewerProtocolPolicy.REDIRECT_TO_HTTPS)
                     .build())
             .defaultRootObject("index.html")
+            .errorResponses(
+                List.of(
+                    ErrorResponse.builder()
+                        .httpStatus(403)
+                        .responseHttpStatus(200)
+                        .responsePagePath("/index.html")
+                        .ttl(Duration.seconds(0))
+                        .build(),
+                    ErrorResponse.builder()
+                        .httpStatus(404)
+                        .responseHttpStatus(200)
+                        .responsePagePath("/index.html")
+                        .ttl(Duration.seconds(0))
+                        .build()))
             .build();
 
     // ------------------------------------------------------------
@@ -54,6 +67,11 @@ public class FrontendStack extends Stack {
         .destinationBucket(siteBucket)
         .distribution(distribution)
         .distributionPaths(List.of("/*"))
+        .build();
+
+    CfnOutput.Builder.create(this, "FrontendCloudFrontUrl")
+        .value("https://" + distribution.getDistributionDomainName())
+        .exportName("FrontendCloudFrontUrl")
         .build();
   }
 }

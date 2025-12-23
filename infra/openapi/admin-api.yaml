@@ -17,9 +17,50 @@ paths:
       responses:
         "200":
           description: Stored
+      security:
+        - CognitoAuthorizer: [ ]
 
       x-amazon-apigateway-integration:
         uri: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:CreateExperience/invocations"
+        httpMethod: "POST"
+        responses:
+          "200":
+            statusCode: "200"
+          "500":
+            statusCode: "500"
+          "default":
+            statusCode: "200"
+        passThroughBehavior: "WHEN_NO_MATCH"
+        contentHandling: "CONVERT_TO_TEXT"
+        type: "aws_proxy"
+        timeoutInMillis: 29000
+  /experiences/{id}:
+    put:
+      summary: Update an experience
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Experience"
+
+      responses:
+        "200":
+          description: Updated
+
+      security:
+        - CognitoAuthorizer: [ ]
+
+
+      x-amazon-apigateway-integration:
+        uri: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:UpdateExperience/invocations"
         httpMethod: "POST"
         responses:
           "200":
@@ -59,3 +100,13 @@ components:
           type: integer
         description:
           type: string
+  securitySchemes:
+    CognitoAuthorizer:
+      type: apiKey
+      name: Authorization
+      in: header
+      x-amazon-apigateway-authtype: cognito_user_pools
+      x-amazon-apigateway-authorizer:
+        type: cognito_user_pools
+        providerARNs:
+          - "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${stageVariables.UserPoolId}"

@@ -26,18 +26,7 @@ public class CreateExperienceHandler
           APIGatewayProxyRequestEvent event, Context context) {
 
     // ------------------------------------------------------------
-    // 1. Admin key check
-    // ------------------------------------------------------------
-    String providedKey = event.getHeaders() != null
-            ? event.getHeaders().get("x-admin-key")
-            : null;
-
-    if (ADMIN_KEY == null || !ADMIN_KEY.equals(providedKey)) {
-      return response(403, "Forbidden");
-    }
-
-    // ------------------------------------------------------------
-    // 2. Parse request body
+    // Parse request body
     // ------------------------------------------------------------
     if (event.getBody() == null || event.getBody().isBlank()) {
       return response(400, "Missing request body");
@@ -51,7 +40,7 @@ public class CreateExperienceHandler
     }
 
     // ------------------------------------------------------------
-    // 3. Validate required fields
+    // Validate required fields
     // ------------------------------------------------------------
     if (req.id == null || req.name == null || req.organization == null
             || req.state == null || req.launchYear == null) {
@@ -59,7 +48,7 @@ public class CreateExperienceHandler
     }
 
     // ------------------------------------------------------------
-    // 4. Write to DynamoDB (idempotent)
+    // Write to DynamoDB (idempotent)
     // ------------------------------------------------------------
     Map<String, AttributeValue> item = new HashMap<>();
     item.put("id", AttributeValue.fromS(req.id));
@@ -83,7 +72,7 @@ public class CreateExperienceHandler
     );
 
     // ------------------------------------------------------------
-    // 5. Return success
+    // Return success
     // ------------------------------------------------------------
     return response(200, "Stored");
   }
