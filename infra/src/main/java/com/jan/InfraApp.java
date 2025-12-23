@@ -8,6 +8,7 @@ public class InfraApp {
 
     new ExperiencesStack(app, "ExperiencesStack");
     new FrontendStack(app, "FrontendStack");
+    new AdminApiStack(app, "AdminApiStack");
 
         app.synth();
     }

@@ -25,6 +25,8 @@ import software.constructs.Construct;
 
 public class ExperiencesStack extends Stack {
 
+  public static final String EXPERIENCES_TABLE_NAME = "PortfolioExperiences";
+
   public ExperiencesStack(final Construct scope, final String id) {
     this(scope, id, null);
   }
@@ -37,14 +39,14 @@ public class ExperiencesStack extends Stack {
     // ------------------------------------------------------------
     Table experiencesTable =
         Table.Builder.create(this, "ExperiencesTable")
-            .tableName("PortfolioExperiences")
+            .tableName(EXPERIENCES_TABLE_NAME)
             .partitionKey(Attribute.builder().name("id").type(AttributeType.STRING).build())
             .billingMode(BillingMode.PAY_PER_REQUEST)
             .removalPolicy(RemovalPolicy.RETAIN)
             .build();
 
     // ------------------------------------------------------------
-    // Lambda: GetExperiences (Java)
+    // Lambda: GetExperiences (READ ONLY)
     // ------------------------------------------------------------
     Function getExperiencesFunction =
         Function.Builder.create(this, "GetExperiencesFunction")
@@ -60,7 +62,7 @@ public class ExperiencesStack extends Stack {
     experiencesTable.grantReadData(getExperiencesFunction);
 
     // ------------------------------------------------------------
-    // API Gateway: HTTP API
+    // Public API Gateway (HTTP API)
     // ------------------------------------------------------------
     HttpApi api =
         HttpApi.Builder.create(this, "PortfolioApi")

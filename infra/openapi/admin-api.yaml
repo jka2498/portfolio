@@ -1,0 +1,61 @@
+openapi: 3.0.3
+info:
+  title: Portfolio Admin API
+  version: 1.0.0
+
+paths:
+  /experiences:
+    post:
+      summary: Create or replace an experience
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Experience"
+      responses:
+        "200":
+          description: Stored
+
+      x-amazon-apigateway-integration:
+        uri: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:CreateExperience/invocations"
+        httpMethod: "POST"
+        responses:
+          "200":
+            statusCode: "200"
+          "500":
+            statusCode: "500"
+          "default":
+            statusCode: "200"
+        passThroughBehavior: "WHEN_NO_MATCH"
+        contentHandling: "CONVERT_TO_TEXT"
+        type: "aws_proxy"
+        timeoutInMillis: 29000
+
+components:
+  schemas:
+    Experience:
+      type: object
+      required:
+        - id
+        - name
+        - organization
+        - state
+        - launchYear
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        organization:
+          type: string
+        domain:
+          type: string
+        state:
+          type: string
+          enum: [RUNNING, STOPPED, ARCHIVED]
+        launchYear:
+          type: integer
+        description:
+          type: string
