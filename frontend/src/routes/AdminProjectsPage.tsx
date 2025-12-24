@@ -3,19 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { adminFetch } from '../api/adminClient'
 import { buildPublicApiUrl } from '../api/apiConfig'
 import { isLoggedIn } from '../api/auth'
-
-type ProjectLifecycle = 'ACTIVE' | 'ARCHIVED'
-
-type Project = {
-  id: string
-  name: string
-  description?: string
-  organization?: string
-  region?: string
-  lifecycle: ProjectLifecycle
-  createdYear?: number
-  technologies?: string[]
-}
+import type { Project, ProjectLifecycle } from '../api/projects'
 
 type ProjectForm = {
   id: string

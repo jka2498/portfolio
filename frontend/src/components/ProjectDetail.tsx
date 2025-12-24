@@ -1,4 +1,5 @@
 import type { Project } from "../api/projects";
+import { describeServiceType } from "../api/projects";
 import { StatusPill } from "./StatusPill";
 
 type ProjectDetailProps = {
@@ -19,12 +20,12 @@ export function ProjectDetail({ project, onClose }: ProjectDetailProps) {
       <aside className="detail-panel empty">
         <div className="detail-header">
           <div>
-            <div className="detail-title">Project detail</div>
-            <div className="detail-subtitle">Select an initiative to inspect.</div>
+            <div className="detail-title">Service detail</div>
+            <div className="detail-subtitle">Select a provisioned unit to inspect.</div>
           </div>
         </div>
         <div className="detail-body">
-          <div className="detail-placeholder">No project selected.</div>
+          <div className="detail-placeholder">No service selected.</div>
         </div>
       </aside>
     );
@@ -32,9 +33,8 @@ export function ProjectDetail({ project, onClose }: ProjectDetailProps) {
 
   const lifecycle = project.lifecycle ?? "Unknown";
   const createdYear = project.createdYear ?? "—";
-  const summary =
-    project.description ??
-    "Platform initiative focused on reliable backend delivery and cloud operations.";
+  const service = describeServiceType(project.serviceType);
+  const summary = project.description ?? "No description provided.";
 
   return (
     <aside className="detail-panel">
@@ -51,6 +51,10 @@ export function ProjectDetail({ project, onClose }: ProjectDetailProps) {
         <div className="detail-section">
           <div className="detail-label">Lifecycle</div>
           <StatusPill state={lifecycle} />
+        </div>
+        <div className="detail-section">
+          <div className="detail-label">Service</div>
+          <div className="detail-value">{service.label}</div>
         </div>
         <div className="detail-section">
           <div className="detail-label">Region</div>

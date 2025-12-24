@@ -9,11 +9,13 @@ type SummaryCardProps = {
   value: string | number;
   helper?: string;
   placeholder?: boolean;
+  tone?: "compute" | "services" | "meta";
 };
 
-function SummaryCard({ label, value, helper, placeholder }: SummaryCardProps) {
+function SummaryCard({ label, value, helper, placeholder, tone }: SummaryCardProps) {
+  const classes = ["summary-card", tone ? `summary-${tone}` : ""].join(" ").trim();
   return (
-    <div className="summary-card">
+    <div className={classes}>
       <div className="summary-header">
         <span>{label}</span>
         {placeholder ? <span className="summary-tag">Placeholder</span> : null}
@@ -69,7 +71,7 @@ export function Overview() {
       <div className="overview-header">
         <div>
           <h2>Control Plane</h2>
-          <p>Career operations view for Jan Andrzejczyk.</p>
+          <p>Cloud-neutral operations view for this workspace.</p>
         </div>
         <div className="overview-status">
           <span className="status-dot neutral" />
@@ -79,29 +81,33 @@ export function Overview() {
 
       <div className="summary-grid">
         <SummaryCard
-          label="Active roles"
+          label="Active instances"
           value={loading ? "—" : activeCount}
-          helper="Roles currently marked as active."
+          helper="Runtime units currently executing workloads."
+          tone="compute"
         />
         <SummaryCard
-          label="Archived roles"
+          label="Archived instances"
           value={loading ? "—" : archivedCount}
-          helper="Past roles marked as archived."
+          helper="Compute retained for lineage and audit contexts."
+          tone="compute"
         />
         <SummaryCard
-          label="Role inventory"
+          label="Compute footprint"
           value={loading ? "—" : totalCount}
-          helper="Total roles across the timeline."
+          helper="Total runtime entries represented in the timeline."
         />
         <SummaryCard
-          label="Project initiatives"
+          label="Service inventory"
           value={loading ? "—" : projectCount}
-          helper="Platforms and systems delivered."
+          helper="Provisioned services tracked in this control plane."
+          tone="services"
         />
         <SummaryCard
-          label="Enabled capabilities"
+          label="Capabilities catalog"
           value={loading ? "—" : capabilityCount}
-          helper="Distinct role capabilities detected."
+          helper="Distinct role capabilities represented across instances."
+          tone="meta"
         />
       </div>
 

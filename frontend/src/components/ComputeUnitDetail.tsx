@@ -30,13 +30,13 @@ export function ComputeUnitDetail({ unit, onClose }: ComputeUnitDetailProps) {
       <aside className="detail-panel empty">
         <div className="detail-header">
           <div>
-            <div className="detail-title">Experience detail</div>
-            <div className="detail-subtitle">Select a role to inspect.</div>
+            <div className="detail-title">Compute detail</div>
+            <div className="detail-subtitle">Select a runtime instance to inspect.</div>
           </div>
         </div>
         <div className="detail-body">
           <div className="detail-placeholder">
-            No experience selected.
+            No compute instance selected.
           </div>
         </div>
       </aside>
@@ -45,7 +45,7 @@ export function ComputeUnitDetail({ unit, onClose }: ComputeUnitDetailProps) {
 
   const runtimeState = unit.state ?? "Unknown";
   const launchYear = unit.startYear ?? "—";
-  const description = `This role highlights ${unit.role} at ${unit.company}, focused on backend and cloud delivery with a ${runtimeState.toLowerCase()} engagement.`;
+  const description = unit.description ?? "No description provided.";
 
   return (
     <aside className="detail-panel">
@@ -70,6 +70,10 @@ export function ComputeUnitDetail({ unit, onClose }: ComputeUnitDetailProps) {
         <div className="detail-section">
           <div className="detail-label">Summary</div>
           <div className="detail-value">{description}</div>
+        </div>
+        <div className="detail-section">
+          <div className="detail-label">Focus</div>
+          <div className="detail-value">{unit.focus ?? "—"}</div>
         </div>
         <div className="detail-section">
           <div className="detail-label">Domains</div>

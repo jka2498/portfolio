@@ -6,6 +6,8 @@ export interface Experience {
   company: string
   state?: string
   startYear?: number
+  description?: string
+  focus?: string
 }
 
 export async function fetchExperiences(): Promise<Experience[]> {

@@ -36,20 +36,20 @@ export function ExperiencesTable() {
     <>
       <section className="page-header">
         <div>
-          <h1>Experience</h1>
-          <p>Roles and responsibilities across Jan's backend and cloud journey.</p>
+          <h1>Compute Instances</h1>
+          <p>Runtime engagements and roles that underpin this workspace.</p>
         </div>
         <div className="page-meta">
           <div className="meta-card">
-            <div className="meta-label">Total roles</div>
+            <div className="meta-label">Instance inventory</div>
             <div className="meta-value">{items.length}</div>
           </div>
           <div className="meta-card">
-            <div className="meta-label">Active roles</div>
+            <div className="meta-label">Active instances</div>
             <div className="meta-value">{activeCount}</div>
           </div>
           <div className="meta-card">
-            <div className="meta-label">Latest start</div>
+            <div className="meta-label">Latest runtime</div>
             <div className="meta-value">{latestYear || "-"}</div>
           </div>
         </div>
@@ -57,12 +57,12 @@ export function ExperiencesTable() {
 
       <section className="table-card">
         <div className="table-toolbar">
-          <div className="table-title">Career timeline</div>
+          <div className="table-title">Compute Timeline</div>
           <div className="table-actions">
             <input
               className="table-search"
-              placeholder="Search roles or companies"
-              aria-label="Search experience entries"
+              placeholder="Search compute roles or companies"
+              aria-label="Search compute experience entries"
             />
             <button className="button ghost" type="button">
               Filters
@@ -71,13 +71,13 @@ export function ExperiencesTable() {
         </div>
 
         <div className="table-layout">
-          <table className="console-table dense">
+          <table className="console-table relaxed compute-table">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Company</th>
-                <th>Start year</th>
-                <th>Status</th>
+                <th>Instance</th>
+                <th>Provider</th>
+                <th>Runtime start</th>
+                <th>State</th>
                 <th>Focus</th>
               </tr>
             </thead>
@@ -100,16 +100,18 @@ export function ExperiencesTable() {
                       aria-selected={isSelected}
                     >
                       <td>
-                        <div className="primary-cell">{exp.role}</div>
-                        <div className="secondary-cell">Experience ID: {exp.id}</div>
+                        <div className="cell-header">
+                          <div className="primary-cell">{exp.role}</div>
+                        </div>
+                        <div className="secondary-cell">Instance ID: {exp.id}</div>
                       </td>
-                      <td>{exp.company}</td>
+                      <td className="muted-cell">{exp.company}</td>
                       <td>{exp.startYear ?? "-"}</td>
                       <td>
                         <StatusPill state={exp.state} />
                       </td>
                       <td className="muted-cell">
-                        {exp.company ? "Backend platforms" : "Independent delivery"}
+                        {exp.focus ?? "—"}
                       </td>
                     </tr>
                   );
@@ -118,10 +120,15 @@ export function ExperiencesTable() {
                 <tr>
                   <td colSpan={5}>
                     <div className="empty-state">
-                      <div className="empty-title">No experience records found</div>
+                      <div className="empty-title">No compute instances discovered</div>
                       <div className="empty-subtitle">
-                        Add experiences to highlight backend and cloud leadership.
+                        Runtime entries will appear once compute engagements are registered against
+                        this control plane. Each entry surfaces lifecycle, provider, and focus
+                        areas.
                       </div>
+                      <button className="button ghost" type="button" disabled>
+                        Register instance (disabled)
+                      </button>
                     </div>
                   </td>
                 </tr>

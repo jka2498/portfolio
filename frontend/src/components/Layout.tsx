@@ -5,6 +5,7 @@ import "../styles/console.css";
 
 const OWNER_NAME = "Jan Andrzejczyk";
 const OWNER_ROLE = "Backend & Cloud Engineer";
+const LINKEDIN_URL = "https://www.linkedin.com/in/janandrzejczyk";
 
 export function Layout({ children }: { children: ReactNode }) {
   const [downloading, setDownloading] = useState(false);
@@ -25,50 +26,53 @@ export function Layout({ children }: { children: ReactNode }) {
     <div className="console-layout">
       <aside className="console-sidebar">
         <div className="console-brand">
-          <div className="brand-mark">CC</div>
+          <div className="brand-mark" aria-hidden="true">CC</div>
           <div className="brand-text">
-            <span className="brand-title">{OWNER_NAME}</span>
-            <span className="brand-subtitle">{OWNER_ROLE}</span>
+            <span className="brand-title">Control Console</span>
+            <span className="brand-subtitle">Personal workspace</span>
           </div>
         </div>
         <nav className="console-nav">
           <div className="nav-group">
             <div className="nav-section">Workspace</div>
             <NavLink
-              className={({ isActive }) => `nav-item${isActive ? " active" : ""}`}
+              className={({ isActive }) => `nav-item tier-primary${isActive ? " active" : ""}`}
               to="/"
               end
             >
+              <span className="nav-icon" aria-hidden="true">▦</span>
               Control Plane
             </NavLink>
-            <button className="nav-item" type="button">
-              Insights
+            <button className="nav-item tier-primary" type="button">
+              <span className="nav-icon" aria-hidden="true">◌</span>
+              Workspace Pulse
             </button>
           </div>
 
           <div className="nav-group">
-            <div className="nav-section">Resources</div>
-            <button className="nav-item" type="button">
-              Experience
-            </button>
-            <button className="nav-item" type="button">
-              Storage
+            <div className="nav-section">Operations</div>
+            <button className="nav-item tier-secondary" type="button">
+              <span className="nav-icon" aria-hidden="true">▣</span>
+              Compute Instances
             </button>
             <NavLink
-              className={({ isActive }) => `nav-item${isActive ? " active" : ""}`}
+              className={({ isActive }) => `nav-item tier-secondary${isActive ? " active" : ""}`}
               to="/projects"
             >
-              Projects
+              <span className="nav-icon" aria-hidden="true">⬚</span>
+              Service Inventory
             </NavLink>
           </div>
 
           <div className="nav-group">
             <div className="nav-section">Administration</div>
-            <button className="nav-item" type="button">
-              Access control
+            <button className="nav-item tier-tertiary" type="button">
+              <span className="nav-icon" aria-hidden="true">⬒</span>
+              Access Control
             </button>
-            <button className="nav-item" type="button">
-              Audit logs
+            <button className="nav-item tier-tertiary" type="button">
+              <span className="nav-icon" aria-hidden="true">☷</span>
+              Audit Logs
             </button>
           </div>
         </nav>
@@ -97,9 +101,22 @@ export function Layout({ children }: { children: ReactNode }) {
           </div>
           <div className="topbar-actions">
             <div className="access-indicator">Access: Read-only</div>
-            <button className="button ghost" type="button" disabled>
-              Export
-            </button>
+            <a
+              className="button ghost linked-in"
+              href={LINKEDIN_URL}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              <span className="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path
+                    d="M6 9.5V18H3V9.5h3zm.25-3A1.73 1.73 0 0 1 4.5 8.25 1.74 1.74 0 0 1 2.75 6.5 1.74 1.74 0 0 1 4.5 4.75 1.74 1.74 0 0 1 6.25 6.5zM21 18h-3v-4.5c0-1.2-.7-1.5-1.2-1.5-.6 0-1.3.5-1.3 1.5V18h-3V9.5h3v1.2c.4-.7 1.3-1.2 2.3-1.2 1.5 0 3.2.9 3.2 3.6z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </span>
+              LinkedIn
+            </a>
             <button
               className="button primary"
               type="button"

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Project } from "../api/projects";
-import { fetchProjects } from "../api/projects";
+import { describeServiceType, fetchProjects } from "../api/projects";
 import { ProjectDetail } from "./ProjectDetail";
 import { StatusPill } from "./StatusPill";
 
@@ -22,9 +22,18 @@ export function ProjectsTable() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchProjects()
-      .then(setProjects)
-      .finally(() => setLoading(false));
+    const loadProjects = async () => {
+      try {
+        const items = await fetchProjects();
+        setProjects(items);
+      } catch (error) {
+        console.error("Failed to load projects.", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void loadProjects();
   }, []);
 
   const activeCount = projects.filter(project => project.lifecycle === "ACTIVE").length;
@@ -47,20 +56,20 @@ export function ProjectsTable() {
     <>
       <section className="page-header">
         <div>
-          <h1>Projects</h1>
-          <p>Delivery initiatives and platforms led by Jan across cloud programs.</p>
+          <h1>Service Inventory</h1>
+          <p>Provisioned services catalogued from delivered platform initiatives.</p>
         </div>
         <div className="page-meta">
           <div className="meta-card">
-            <div className="meta-label">Total initiatives</div>
+            <div className="meta-label">Service inventory</div>
             <div className="meta-value">{projects.length}</div>
           </div>
           <div className="meta-card">
-            <div className="meta-label">Active initiatives</div>
+            <div className="meta-label">Active services</div>
             <div className="meta-value">{activeCount}</div>
           </div>
           <div className="meta-card">
-            <div className="meta-label">Latest launch</div>
+            <div className="meta-label">Latest provision</div>
             <div className="meta-value">{latestYear || "-"}</div>
           </div>
         </div>
@@ -68,12 +77,12 @@ export function ProjectsTable() {
 
       <section className="table-card">
         <div className="table-toolbar">
-          <div className="table-title">Project buckets</div>
+          <div className="table-title">Provisioned Services</div>
           <div className="table-actions">
             <input
               className="table-search"
-              placeholder="Search initiatives or regions"
-              aria-label="Search project initiatives"
+              placeholder="Search services or regions"
+              aria-label="Search service inventory"
             />
             <button className="button ghost" type="button">
               Filters
@@ -82,10 +91,11 @@ export function ProjectsTable() {
         </div>
 
         <div className="table-layout">
-          <table className="console-table dense">
+          <table className="console-table relaxed service-table">
             <thead>
               <tr>
-                <th>Bucket</th>
+                <th>Provisioned unit</th>
+                <th>Service class</th>
                 <th>Region</th>
                 <th>Created year</th>
                 <th>Status</th>
@@ -96,6 +106,7 @@ export function ProjectsTable() {
               {projects.length > 0 ? (
                 projects.map(project => {
                   const isSelected = project.id === selectedId;
+                  const service = describeServiceType(project.serviceType);
                   return (
                     <tr
                       key={project.id}
@@ -113,11 +124,14 @@ export function ProjectsTable() {
                       <td>
                         <div className="bucket-cell">
                           <span className="bucket-icon" aria-hidden="true" />
-                            <div>
-                              <div className="primary-cell">{project.name}</div>
-                              <div className="secondary-cell">Project ID: {project.id}</div>
-                            </div>
+                          <div>
+                            <div className="primary-cell">{project.name}</div>
+                            <div className="secondary-cell">Project ID: {project.id}</div>
                           </div>
+                        </div>
+                      </td>
+                      <td>
+                        <span className="tag-pill">{service.label}</span>
                       </td>
                       <td>{project.region ?? "Global"}</td>
                       <td>{project.createdYear ?? "-"}</td>
@@ -132,12 +146,16 @@ export function ProjectsTable() {
                 })
               ) : (
                 <tr>
-                  <td colSpan={5}>
+                  <td colSpan={6}>
                     <div className="empty-state">
-                      <div className="empty-title">No projects found</div>
+                      <div className="empty-title">No services registered</div>
                       <div className="empty-subtitle">
-                        Add initiatives to highlight platforms and delivery wins.
+                        This inventory lists provisioned services with lifecycle, region, and
+                        technology context. Register an initiative to surface it here.
                       </div>
+                      <button className="button ghost" type="button" disabled>
+                        Register service (disabled)
+                      </button>
                     </div>
                   </td>
                 </tr>
