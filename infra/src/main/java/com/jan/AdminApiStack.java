@@ -1,8 +1,5 @@
 package com.jan;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import software.amazon.awscdk.*;
 import software.amazon.awscdk.services.apigateway.*;
 import software.amazon.awscdk.services.cognito.*;
@@ -12,8 +9,11 @@ import software.amazon.awscdk.services.iam.ServicePrincipal;
 import software.amazon.awscdk.services.lambda.Code;
 import software.amazon.awscdk.services.lambda.Function;
 import software.amazon.awscdk.services.lambda.Permission;
-import software.amazon.awscdk.services.lambda.Runtime;
 import software.constructs.Construct;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AdminApiStack extends Stack {
 
@@ -35,9 +35,9 @@ public class AdminApiStack extends Stack {
     // ------------------------------------------------------------
     Function createExperienceFunction =
         Function.Builder.create(this, "CreateExperienceFunction")
-            .functionName("CreateExperience")
-            .runtime(Runtime.JAVA_21)
-            .handler("com.jan.admin.CreateExperienceHandler")
+                .functionName("CreateExperience")
+                .runtime(Runtime.JAVA_21)
+                .handler("com.jan.api.admin.CreateExperienceHandler")
             .code(Code.fromAsset("../services/api/admin/target/admin.jar"))
             .memorySize(1024)
             .timeout(Duration.seconds(10))
@@ -51,30 +51,62 @@ public class AdminApiStack extends Stack {
     experiencesTable.grantWriteData(createExperienceFunction);
 
     Function updateExperienceFunction =
-        Function.Builder.create(this, "UpdateExperienceFunction")
-            .functionName("UpdateExperience")
-            .runtime(Runtime.JAVA_21)
-            .handler("com.jan.admin.UpdateExperienceHandler")
+            Function.Builder.create(this, "UpdateExperienceFunction")
+                    .functionName("UpdateExperience")
+                    .runtime(Runtime.JAVA_21)
+                    .handler("com.jan.api.admin.UpdateExperienceHandler")
             .code(Code.fromAsset("../services/api/admin/target/admin.jar"))
             .memorySize(1024)
-            .timeout(Duration.seconds(10))
-            .environment(
-                Map.of(
-                    "TABLE_NAME", experiencesTable.getTableName(),
-                    "FRONTEND_ORIGIN", Fn.importValue("FrontendCloudFrontUrl")))
-            .build();
+                    .timeout(Duration.seconds(10))
+                    .environment(
+                            Map.of(
+                                    "TABLE_NAME", experiencesTable.getTableName(),
+                                    "FRONTEND_ORIGIN", Fn.importValue("FrontendCloudFrontUrl")))
+                    .build();
 
     // WRITE permissions only
     experiencesTable.grantWriteData(updateExperienceFunction);
+
+    Function createProjectFunction =
+            Function.Builder.create(this, "CreateProjectFunction")
+                    .functionName("CreateProject")
+                    .runtime(Runtime.JAVA_21)
+                    .handler("com.jan.api.admin.CreateProjectHandler")
+                    .code(Code.fromAsset("../services/api/admin/target/admin.jar"))
+                    .memorySize(1024)
+                    .timeout(Duration.seconds(10))
+                    .environment(
+                            Map.of(
+                                    "TABLE_NAME", experiencesTable.getTableName(),
+                                    "FRONTEND_ORIGIN", Fn.importValue("FrontendCloudFrontUrl")))
+                    .build();
+
+    experiencesTable.grantWriteData(createProjectFunction);
+
+    Function updateProjectFunction =
+            Function.Builder.create(this, "UpdateProjectFunction")
+                    .functionName("UpdateProject")
+                    .runtime(Runtime.JAVA_21)
+                    .handler("com.jan.api.admin.UpdateProjectHandler")
+                    .code(Code.fromAsset("../services/api/admin/target/admin.jar"))
+                    .memorySize(1024)
+                    .timeout(Duration.seconds(10))
+                    .environment(
+                            Map.of(
+                                    "TABLE_NAME", experiencesTable.getTableName(),
+                                    "FRONTEND_ORIGIN", Fn.importValue("FrontendCloudFrontUrl")))
+                    .build();
+
+    experiencesTable.grantWriteData(updateProjectFunction);
 
     // ------------------------------------------------------------
     // Admin REST API (OpenAPI 3)
     // ------------------------------------------------------------
     SpecRestApi adminApi =
-        SpecRestApi.Builder.create(this, "PortfolioAdminApi")
-            .restApiName("PortfolioAdminApi")
-            .apiDefinition(ApiDefinition.fromAsset("openapi/admin-api.yaml"))
-            .build();
+            SpecRestApi.Builder.create(this, "PortfolioAdminApi")
+                    .restApiName("PortfolioAdminApi")
+                    .apiDefinition(ApiDefinition.fromAsset("openapi/admin-api.yaml"))
+                    .build();
 
     String frontendUrl = Fn.importValue("FrontendCloudFrontUrl");
     String quotedFrontendUrl = "'" + frontendUrl + "'";
@@ -110,25 +142,41 @@ public class AdminApiStack extends Stack {
             .principal(new ServicePrincipal("apigateway.amazonaws.com"))
             .action("lambda:InvokeFunction")
             .sourceArn(adminApi.arnForExecuteApi("*", "/*", "*"))
-            .build());
+                .build());
 
     updateExperienceFunction.addPermission(
-        "AllowUpdateExperienceInvoke",
-        Permission.builder()
-            .principal(new ServicePrincipal("apigateway.amazonaws.com"))
-            .action("lambda:InvokeFunction")
-            .sourceArn(adminApi.arnForExecuteApi("*", "/*", "*"))
-            .build());
+            "AllowUpdateExperienceInvoke",
+            Permission.builder()
+                    .principal(new ServicePrincipal("apigateway.amazonaws.com"))
+                    .action("lambda:InvokeFunction")
+                    .sourceArn(adminApi.arnForExecuteApi("*", "/*", "*"))
+                    .build());
+
+    createProjectFunction.addPermission(
+            "AllowCreateProjectInvoke",
+            Permission.builder()
+                    .principal(new ServicePrincipal("apigateway.amazonaws.com"))
+                    .action("lambda:InvokeFunction")
+                    .sourceArn(adminApi.arnForExecuteApi("*", "/*", "*"))
+                    .build());
+
+    updateProjectFunction.addPermission(
+            "AllowUpdateProjectInvoke",
+            Permission.builder()
+                    .principal(new ServicePrincipal("apigateway.amazonaws.com"))
+                    .action("lambda:InvokeFunction")
+                    .sourceArn(adminApi.arnForExecuteApi("*", "/*", "*"))
+                    .build());
 
     // ------------------------------------------------------------
     // Cognito: User Pool (Hosted UI)
     // ------------------------------------------------------------
     UserPool userPool =
-        UserPool.Builder.create(this, "AdminUserPool")
-            .userPoolName("PortfolioAdminUserPool")
-            .selfSignUpEnabled(false) // admin-only
-            .signInAliases(
-                software.amazon.awscdk.services.cognito.SignInAliases.builder().email(true).build())
+            UserPool.Builder.create(this, "AdminUserPool")
+                    .userPoolName("PortfolioAdminUserPool")
+                    .selfSignUpEnabled(false) // admin-only
+                    .signInAliases(
+                            software.amazon.awscdk.services.cognito.SignInAliases.builder().email(true).build())
             .removalPolicy(RemovalPolicy.RETAIN)
             .build();
 
@@ -182,7 +230,7 @@ public class AdminApiStack extends Stack {
 
     CfnOutput.Builder.create(this, "UserPoolClientId")
         .value(userPoolClient.getUserPoolClientId())
-        .build();
+            .build();
 
     // ------------------------------------------------------------
     // Stage variable for Lambda routing
@@ -192,11 +240,15 @@ public class AdminApiStack extends Stack {
     Map<String, String> stageVars = new HashMap<>();
     stageVars.put("ExperienceFunction", createExperienceFunction.getFunctionName());
     stageVars.put("UpdateExperienceFunction", updateExperienceFunction.getFunctionName());
+    stageVars.put("ProjectFunction", createProjectFunction.getFunctionName());
+    stageVars.put("UpdateProjectFunction", updateProjectFunction.getFunctionName());
     stageVars.put("UserPoolId", userPool.getUserPoolId());
 
     cfnStage.addPropertyOverride("Variables", stageVars);
 
     adminApi.getDeploymentStage().getNode().addDependency(createExperienceFunction);
     adminApi.getDeploymentStage().getNode().addDependency(updateExperienceFunction);
+    adminApi.getDeploymentStage().getNode().addDependency(createProjectFunction);
+    adminApi.getDeploymentStage().getNode().addDependency(updateProjectFunction);
   }
 }

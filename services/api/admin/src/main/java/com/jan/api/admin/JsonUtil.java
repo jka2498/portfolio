@@ -1,4 +1,4 @@
-package com.jan.experiences;
+package com.jan.api.admin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

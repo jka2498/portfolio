@@ -9,18 +9,18 @@ export function Storage() {
       <div className="page-header">
         <div>
           <h1>Storage</h1>
-          <p>Persistent units produced by the environment.</p>
+          <p>Operational archives curated from Jan's cloud programs.</p>
         </div>
       </div>
 
       <section className="table-card">
         <div className="table-toolbar">
-          <div className="table-title">Storage units</div>
+          <div className="table-title">Operational archives</div>
           <div className="table-actions">
             <input
               className="table-search"
-              placeholder="Search units or types"
-              aria-label="Search storage units"
+              placeholder="Search archives or types"
+              aria-label="Search storage archives"
             />
             <button className="button ghost" type="button">
               Filters

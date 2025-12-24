@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Experience } from "../api/experiences";
 import { fetchExperiences } from "../api/experiences";
-import { STORAGE_UNITS } from "../data/storageUnits";
+import type { Project } from "../api/projects";
+import { fetchProjects } from "../api/projects";
 
 type SummaryCardProps = {
   label: string;
@@ -25,12 +26,26 @@ function SummaryCard({ label, value, helper, placeholder }: SummaryCardProps) {
 
 export function Overview() {
   const [experiences, setExperiences] = useState<Experience[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchExperiences()
-      .then(setExperiences)
-      .finally(() => setLoading(false));
+    const loadOverview = async () => {
+      try {
+        const [experienceItems, projectItems] = await Promise.all([
+          fetchExperiences(),
+          fetchProjects(),
+        ]);
+        setExperiences(experienceItems);
+        setProjects(projectItems);
+      } catch (error) {
+        console.error("Failed to load overview data.", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void loadOverview();
   }, []);
 
   const { activeCount, archivedCount, latestLaunch, capabilityCount } = useMemo(() => {
@@ -46,15 +61,15 @@ export function Overview() {
   }, [experiences]);
 
   const totalCount = experiences.length;
+  const projectCount = projects.length;
   const environmentStatus = loading ? "Evaluating" : "Stable";
-  const storageCount = STORAGE_UNITS.length;
 
   return (
     <section className="overview">
       <div className="overview-header">
         <div>
           <h2>Control Plane</h2>
-          <p>System overview of portfolio resources and operational health.</p>
+          <p>Career operations view for Jan Andrzejczyk.</p>
         </div>
         <div className="overview-status">
           <span className="status-dot neutral" />
@@ -64,24 +79,24 @@ export function Overview() {
 
       <div className="summary-grid">
         <SummaryCard
-          label="Active workloads"
+          label="Active roles"
           value={loading ? "—" : activeCount}
-          helper="Experience entries in an active runtime state."
+          helper="Roles currently marked as active."
         />
         <SummaryCard
-          label="Archived workloads"
+          label="Archived roles"
           value={loading ? "—" : archivedCount}
-          helper="Entries marked complete or inactive."
+          helper="Past roles marked as archived."
         />
         <SummaryCard
-          label="Compute inventory"
+          label="Role inventory"
           value={loading ? "—" : totalCount}
-          helper="Total workload units tracked."
+          helper="Total roles across the timeline."
         />
         <SummaryCard
-          label="Storage units"
-          value={storageCount}
-          helper="Project capacity currently indexed."
+          label="Project initiatives"
+          value={loading ? "—" : projectCount}
+          helper="Platforms and systems delivered."
         />
         <SummaryCard
           label="Enabled capabilities"
@@ -94,7 +109,7 @@ export function Overview() {
         <div className="panel-title">System status</div>
         <div className="panel-body">
           <div className="panel-row">
-            <span>Operational posture</span>
+            <span>Portfolio posture</span>
             <span className="panel-value">{environmentStatus}</span>
           </div>
           <div className="panel-row">
@@ -117,10 +132,10 @@ export function Overview() {
       </div>
 
       <div className="overview-panel">
-        <div className="panel-title">Resource lifecycle</div>
+        <div className="panel-title">Delivery cadence</div>
         <div className="panel-body">
           <div className="panel-row">
-            <span>Newest workload launch</span>
+            <span>Newest role start</span>
             <span className="panel-value">
               {loading ? "Evaluating" : latestLaunch ?? "—"}
             </span>

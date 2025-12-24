@@ -1,24 +1,46 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { NavLink } from "react-router-dom";
+import { fetchCvDownloadUrl } from "../api/cv";
 import "../styles/console.css";
 
+const OWNER_NAME = "Jan Andrzejczyk";
+const OWNER_ROLE = "Backend & Cloud Engineer";
 
 export function Layout({ children }: { children: ReactNode }) {
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadCv = async () => {
+    try {
+      setDownloading(true);
+      const url = await fetchCvDownloadUrl();
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (error) {
+      console.error("Failed to download CV.", error);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <div className="console-layout">
       <aside className="console-sidebar">
         <div className="console-brand">
           <div className="brand-mark">CC</div>
           <div className="brand-text">
-            <span className="brand-title">Cloud Console</span>
-            <span className="brand-subtitle">Operations</span>
+            <span className="brand-title">{OWNER_NAME}</span>
+            <span className="brand-subtitle">{OWNER_ROLE}</span>
           </div>
         </div>
         <nav className="console-nav">
           <div className="nav-group">
             <div className="nav-section">Workspace</div>
-            <button className="nav-item active" type="button">
+            <NavLink
+              className={({ isActive }) => `nav-item${isActive ? " active" : ""}`}
+              to="/"
+              end
+            >
               Control Plane
-            </button>
+            </NavLink>
             <button className="nav-item" type="button">
               Insights
             </button>
@@ -27,14 +49,17 @@ export function Layout({ children }: { children: ReactNode }) {
           <div className="nav-group">
             <div className="nav-section">Resources</div>
             <button className="nav-item" type="button">
-              Compute Units
+              Experience
             </button>
             <button className="nav-item" type="button">
               Storage
             </button>
-            <button className="nav-item" type="button">
+            <NavLink
+              className={({ isActive }) => `nav-item${isActive ? " active" : ""}`}
+              to="/projects"
+            >
               Projects
-            </button>
+            </NavLink>
           </div>
 
           <div className="nav-group">
@@ -65,9 +90,9 @@ export function Layout({ children }: { children: ReactNode }) {
       <div className="console-main">
         <header className="console-topbar">
           <div>
-            <div className="topbar-title">Talent Management</div>
+            <div className="topbar-title">{OWNER_NAME}</div>
             <div className="topbar-subtitle">
-              Centralized experience records and workforce visibility
+              {OWNER_ROLE}
             </div>
           </div>
           <div className="topbar-actions">
@@ -75,8 +100,13 @@ export function Layout({ children }: { children: ReactNode }) {
             <button className="button ghost" type="button" disabled>
               Export
             </button>
-            <button className="button primary" type="button" disabled>
-              New entry
+            <button
+              className="button primary"
+              type="button"
+              onClick={handleDownloadCv}
+              disabled={downloading}
+            >
+              {downloading ? "Preparing CV…" : "Download CV"}
             </button>
           </div>
         </header>

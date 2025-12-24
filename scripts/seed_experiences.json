@@ -1,0 +1,23 @@
+[
+  {
+    "id": "exp-jan-001",
+    "role": "Senior Backend Engineer",
+    "company": "FinTech Platform",
+    "state": "ACTIVE",
+    "startYear": 2022
+  },
+  {
+    "id": "exp-jan-002",
+    "role": "Backend Engineer",
+    "company": "Cloud Services Firm",
+    "state": "ARCHIVED",
+    "startYear": 2020
+  },
+  {
+    "id": "exp-jan-003",
+    "role": "Software Engineer",
+    "company": "Logistics Automation Team",
+    "state": "ARCHIVED",
+    "startYear": 2018
+  }
+]

@@ -1,15 +1,16 @@
-package com.jan.admin;
+package com.jan.api.admin;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.HashMap;
-import java.util.Map;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class UpdateExperienceHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -24,9 +25,14 @@ public class UpdateExperienceHandler
             APIGatewayProxyRequestEvent event,
             Context context) {
 
-        String id = event.getPathParameters().get("id");
+        String id =
+                event.getPathParameters() != null ? event.getPathParameters().get("id") : null;
 
         try {
+            if (id == null || id.isBlank()) {
+                return ApiResponse.response(400, "{\"error\":\"Missing experience id\"}");
+            }
+
             Map<String, Object> body =
                     mapper.readValue(event.getBody(), Map.class);
 
@@ -46,10 +52,10 @@ public class UpdateExperienceHandler
                     .expressionAttributeValues(values)
                     .build());
 
-            return response(200, "Updated");
+            return ApiResponse.ok("{\"status\":\"updated\"}");
 
         } catch (Exception e) {
-            return response(500, e.getMessage());
+            return ApiResponse.response(500, "{\"error\":\"" + e.getMessage() + "\"}");
         }
     }
 
@@ -81,9 +87,4 @@ public class UpdateExperienceHandler
         return expr.toString();
     }
 
-    private APIGatewayProxyResponseEvent response(int status, String body) {
-        return new APIGatewayProxyResponseEvent()
-                .withStatusCode(status)
-                .withBody("{\"message\":\"" + body + "\"}");
-    }
 }

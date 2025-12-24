@@ -30,13 +30,13 @@ export function ComputeUnitDetail({ unit, onClose }: ComputeUnitDetailProps) {
       <aside className="detail-panel empty">
         <div className="detail-header">
           <div>
-            <div className="detail-title">Compute unit detail</div>
-            <div className="detail-subtitle">Select a workload to inspect.</div>
+            <div className="detail-title">Experience detail</div>
+            <div className="detail-subtitle">Select a role to inspect.</div>
           </div>
         </div>
         <div className="detail-body">
           <div className="detail-placeholder">
-            No compute unit selected.
+            No experience selected.
           </div>
         </div>
       </aside>
@@ -45,7 +45,7 @@ export function ComputeUnitDetail({ unit, onClose }: ComputeUnitDetailProps) {
 
   const runtimeState = unit.state ?? "Unknown";
   const launchYear = unit.startYear ?? "—";
-  const description = `This unit represents ${unit.role} at ${unit.company}, operating in a ${runtimeState.toLowerCase()} runtime state.`;
+  const description = `This role highlights ${unit.role} at ${unit.company}, focused on backend and cloud delivery with a ${runtimeState.toLowerCase()} engagement.`;
 
   return (
     <aside className="detail-panel">
@@ -60,11 +60,11 @@ export function ComputeUnitDetail({ unit, onClose }: ComputeUnitDetailProps) {
       </div>
       <div className="detail-body">
         <div className="detail-section">
-          <div className="detail-label">Runtime state</div>
+          <div className="detail-label">Engagement state</div>
           <StatusPill state={runtimeState} />
         </div>
         <div className="detail-section">
-          <div className="detail-label">Launch year</div>
+          <div className="detail-label">Start year</div>
           <div className="detail-value">{launchYear}</div>
         </div>
         <div className="detail-section">

@@ -1,0 +1,51 @@
+[
+  {
+    "id": "proj-jan-001",
+    "type": "PROJECT",
+    "name": "Multi-region API Platform",
+    "description": "Designed and delivered a resilient API platform with automated failover and cost-optimized scaling.",
+    "organization": "FinTech Platform",
+    "region": "eu-central-1",
+    "lifecycle": "ACTIVE",
+    "createdYear": 2023,
+    "technologies": [
+      "Java",
+      "AWS Lambda",
+      "API Gateway",
+      "DynamoDB",
+      "Terraform"
+    ]
+  },
+  {
+    "id": "proj-jan-002",
+    "type": "PROJECT",
+    "name": "Observability Command Center",
+    "description": "Built dashboards and alerting pipelines to reduce mean time to recovery across core services.",
+    "organization": "Cloud Services Firm",
+    "region": "eu-west-1",
+    "lifecycle": "ACTIVE",
+    "createdYear": 2022,
+    "technologies": [
+      "OpenTelemetry",
+      "Grafana",
+      "Prometheus",
+      "AWS CloudWatch"
+    ]
+  },
+  {
+    "id": "proj-jan-003",
+    "type": "PROJECT",
+    "name": "Legacy Service Migration",
+    "description": "Modernized monolith workloads into containerized services with CI/CD automation.",
+    "organization": "Logistics Automation Team",
+    "region": "eu-west-1",
+    "lifecycle": "ARCHIVED",
+    "createdYear": 2021,
+    "technologies": [
+      "Docker",
+      "Kubernetes",
+      "GitHub Actions",
+      "PostgreSQL"
+    ]
+  }
+]

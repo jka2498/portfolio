@@ -36,12 +36,12 @@ export function ExperiencesTable() {
     <>
       <section className="page-header">
         <div>
-          <h1>Compute Units</h1>
-          <p>Track workload-style experiences across the portfolio runtime.</p>
+          <h1>Experience</h1>
+          <p>Roles and responsibilities across Jan's backend and cloud journey.</p>
         </div>
         <div className="page-meta">
           <div className="meta-card">
-            <div className="meta-label">Total records</div>
+            <div className="meta-label">Total roles</div>
             <div className="meta-value">{items.length}</div>
           </div>
           <div className="meta-card">
@@ -57,12 +57,12 @@ export function ExperiencesTable() {
 
       <section className="table-card">
         <div className="table-toolbar">
-          <div className="table-title">Active workloads</div>
+          <div className="table-title">Career timeline</div>
           <div className="table-actions">
             <input
               className="table-search"
-              placeholder="Search units or environments"
-              aria-label="Search compute units"
+              placeholder="Search roles or companies"
+              aria-label="Search experience entries"
             />
             <button className="button ghost" type="button">
               Filters
@@ -75,10 +75,10 @@ export function ExperiencesTable() {
             <thead>
               <tr>
                 <th>Name</th>
-                <th>Organization</th>
-                <th>Launch year</th>
-                <th>Runtime state</th>
-                <th>Domain</th>
+                <th>Company</th>
+                <th>Start year</th>
+                <th>Status</th>
+                <th>Focus</th>
               </tr>
             </thead>
             <tbody>
@@ -101,7 +101,7 @@ export function ExperiencesTable() {
                     >
                       <td>
                         <div className="primary-cell">{exp.role}</div>
-                        <div className="secondary-cell">Unit ID: {exp.id}</div>
+                        <div className="secondary-cell">Experience ID: {exp.id}</div>
                       </td>
                       <td>{exp.company}</td>
                       <td>{exp.startYear ?? "-"}</td>
@@ -109,7 +109,7 @@ export function ExperiencesTable() {
                         <StatusPill state={exp.state} />
                       </td>
                       <td className="muted-cell">
-                        {exp.company ? "Corporate" : "Unassigned"}
+                        {exp.company ? "Backend platforms" : "Independent delivery"}
                       </td>
                     </tr>
                   );
@@ -118,9 +118,9 @@ export function ExperiencesTable() {
                 <tr>
                   <td colSpan={5}>
                     <div className="empty-state">
-                      <div className="empty-title">No workloads found</div>
+                      <div className="empty-title">No experience records found</div>
                       <div className="empty-subtitle">
-                        Create a new compute unit to begin tracking runtime history.
+                        Add experiences to highlight backend and cloud leadership.
                       </div>
                     </div>
                   </td>

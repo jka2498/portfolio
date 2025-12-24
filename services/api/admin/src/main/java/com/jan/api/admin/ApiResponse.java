@@ -1,6 +1,7 @@
-package com.jan.admin;
+package com.jan.api.admin;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+
 import java.util.Map;
 
 public class ApiResponse {
@@ -28,4 +29,3 @@ public class ApiResponse {
         );
     }
 }
-

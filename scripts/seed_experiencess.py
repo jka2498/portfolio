@@ -1,29 +1,17 @@
+import json
+from pathlib import Path
+
 import boto3
 from botocore.exceptions import ClientError
 
 TABLE_NAME = "PortfolioExperiences"
+SEED_FILE = Path(__file__).with_name("seed_experiences.json")
 
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(TABLE_NAME)
 
-experiences = [
-    {
-        "id": "exp-1",
-        "role": "Software Engineer",
-        "company": "Example Corp",
-        "state": "RUNNING",
-        "startYear": 2022
-    },
-    {
-        "id": "exp-2",
-        "role": "Backend Engineer",
-        "company": "Another Co",
-        "state": "STOPPED",
-        "startYear": 2020
-    }
-]
-
 def seed():
+    experiences = json.loads(SEED_FILE.read_text(encoding="utf-8"))
     for exp in experiences:
         try:
             table.put_item(Item=exp)

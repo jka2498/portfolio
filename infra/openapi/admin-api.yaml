@@ -124,6 +124,126 @@ paths:
             responseParameters:
               method.response.header.Access-Control-Allow-Origin: "'https://d18ckr4m1gi0vr.cloudfront.net'"
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+              method.response.header.Access-Control-Allow-Methods: "'OPTIONS,PUT'"
+  /projects:
+    post:
+      summary: Create or replace a project
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Project"
+      responses:
+        "200":
+          description: Stored
+      security:
+        - CognitoAuthorizer: [ ]
+
+      x-amazon-apigateway-integration:
+        uri: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:CreateProject/invocations"
+        httpMethod: "POST"
+        responses:
+          "200":
+            statusCode: "200"
+          "500":
+            statusCode: "500"
+          "default":
+            statusCode: "200"
+        passThroughBehavior: "WHEN_NO_MATCH"
+        contentHandling: "CONVERT_TO_TEXT"
+        type: "aws_proxy"
+        timeoutInMillis: 29000
+    options:
+      summary: CORS support
+      responses:
+        "200":
+          description: CORS OK
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{ \"statusCode\": 200 }"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'https://d18ckr4m1gi0vr.cloudfront.net'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+              method.response.header.Access-Control-Allow-Methods: "'OPTIONS,POST'"
+  /projects/{id}:
+    put:
+      summary: Update a project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Project"
+
+      responses:
+        "200":
+          description: Updated
+
+      security:
+        - CognitoAuthorizer: [ ]
+
+      x-amazon-apigateway-integration:
+        uri: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:UpdateProject/invocations"
+        httpMethod: "POST"
+        responses:
+          "200":
+            statusCode: "200"
+          "500":
+            statusCode: "500"
+          "default":
+            statusCode: "200"
+        passThroughBehavior: "WHEN_NO_MATCH"
+        contentHandling: "CONVERT_TO_TEXT"
+        type: "aws_proxy"
+        timeoutInMillis: 29000
+    options:
+      summary: CORS support
+      responses:
+        "200":
+          description: CORS OK
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{ \"statusCode\": 200 }"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'https://d18ckr4m1gi0vr.cloudfront.net'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
               method.response.header.Access-Control-Allow-Methods: "'OPTIONS,POST'"
 
 components:
@@ -147,11 +267,37 @@ components:
           type: string
         state:
           type: string
-          enum: [RUNNING, STOPPED, ARCHIVED]
+          enum: [ RUNNING, STOPPED, ARCHIVED ]
         launchYear:
           type: integer
         description:
           type: string
+    Project:
+      type: object
+      required:
+        - id
+        - name
+        - lifecycle
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        organization:
+          type: string
+        region:
+          type: string
+        lifecycle:
+          type: string
+          enum: [ ACTIVE, ARCHIVED ]
+        createdYear:
+          type: integer
+        technologies:
+          type: array
+          items:
+            type: string
   securitySchemes:
     CognitoAuthorizer:
       type: apiKey
