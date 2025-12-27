@@ -63,7 +63,7 @@ public class FrontendStack extends Stack {
     // Deploy frontend build output
     // ------------------------------------------------------------
     BucketDeployment.Builder.create(this, "DeployFrontend")
-        .sources(List.of(Source.asset("../frontend/dist")))
+        .sources(List.of(Source.asset("../frontendv3/dist")))
         .destinationBucket(siteBucket)
         .distribution(distribution)
         .distributionPaths(List.of("/*"))

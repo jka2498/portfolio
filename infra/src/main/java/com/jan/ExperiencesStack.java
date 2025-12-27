@@ -12,6 +12,7 @@ import software.amazon.awscdk.services.dynamodb.BillingMode;
 import software.amazon.awscdk.services.dynamodb.Table;
 import software.amazon.awscdk.services.lambda.Code;
 import software.amazon.awscdk.services.lambda.Function;
+import software.amazon.awscdk.services.lambda.Runtime;
 import software.amazon.awscdk.services.s3.BlockPublicAccess;
 import software.amazon.awscdk.services.s3.Bucket;
 import software.constructs.Construct;
@@ -120,7 +121,7 @@ public class ExperiencesStack extends Stack {
                     .apiName("PortfolioApi")
             .corsPreflight(
                 CorsPreflightOptions.builder()
-                    .allowOrigins(List.of("http://localhost:5173", frontendUrl))
+                    .allowOrigins(List.of("http://localhost:5173", "http://localhost:3000", frontendUrl))
                     .allowMethods(List.of(GET, OPTIONS))
                     .allowHeaders(List.of("*"))
                         .build())
