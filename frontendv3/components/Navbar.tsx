@@ -31,7 +31,7 @@ const Navbar: React.FC = () => {
       </div>
 
       <div className="flex items-center gap-4 text-gray-300 text-sm">
-        <a href="https://linkedin.com/in/jan-andrzejczyk" target="_blank" rel="noopener noreferrer" className="hover:text-white" title="Connect on LinkedIn">
+        <a href="https://www.linkedin.com/in/jan-andrzejczyk-61ba6012a/" target="_blank" rel="noopener noreferrer" className="hover:text-white" title="Connect on LinkedIn">
             <Linkedin size={18} />
         </a>
         <button className="hover:text-white"><Bell size={18} /></button>
