@@ -6,6 +6,8 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const currentYear = new Date().getFullYear();
+
   return (
     <div className="min-h-screen bg-[#0f1117] text-gray-300 font-sans">
       <Navbar />
@@ -21,7 +23,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <a href="#" className="hover:underline hover:text-cyan-400">Privacy</a>
                 <a href="#" className="hover:underline hover:text-cyan-400">Terms</a>
                 <a href="#" className="hover:underline hover:text-cyan-400">Cookie Preferences</a>
-                <span className="ml-auto">© 2025, Jan's Cloud Portfolio, Inc. or its affiliates.</span>
+                <span className="ml-auto">&copy; {currentYear}, Jan's Cloud Portfolio, Inc. or its affiliates.</span>
            </footer>
         </main>
       </div>

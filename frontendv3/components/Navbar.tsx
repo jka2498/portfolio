@@ -7,15 +7,10 @@ const Navbar: React.FC = () => {
       <div className="flex items-center gap-4">
         <button className="p-1 hover:bg-slate-700 rounded text-gray-300">
             <div className="font-bold text-xl flex items-center gap-2">
-                <div className="w-8 h-8 bg-orange-500 rounded flex items-center justify-center">
-                    <Grid size={20} className="text-white" />
-                </div>
-                <span className="hidden md:block">Console</span>
+                <img src="/favicon.svg" alt="Cloud logo" className="w-[30px] h-[30px]" />
+                <span className="hidden md:block text-orange-500">Console</span>
             </div>
         </button>
-        <div className="relative hidden md:block">
-            <span className="font-bold text-lg ml-2">Services</span>
-        </div>
       </div>
 
       <div className="flex-1 max-w-2xl mx-4 hidden sm:block">

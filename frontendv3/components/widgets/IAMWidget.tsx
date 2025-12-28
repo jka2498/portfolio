@@ -90,7 +90,16 @@ const IAMWidget: React.FC = () => {
 
         <div className="flex items-start gap-2 bg-yellow-900/10 border border-yellow-800/30 p-2 rounded text-xs text-yellow-500">
             <AlertTriangle size={14} className="shrink-0 mt-0.5" />
-            <p>Root user has open-to-work permissions enabled. Contact <span className="underline cursor-pointer">jkandrzej@googlemail.com</span>.</p>
+            <p>
+                Root user has open-to-work permissions enabled. Contact{' '}
+                <a
+                    href="mailto:jkandrzej@googlemail.com"
+                    className="underline hover:text-yellow-300"
+                >
+                    jkandrzej@googlemail.com
+                </a>
+                .
+            </p>
         </div>
       </div>
     </Card>
