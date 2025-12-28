@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public class AdminApiStack extends Stack {
+  private static final String FRONTEND_URL = "https://www.jandrzejczyk.dev";
 
   public AdminApiStack(final Construct scope, final String id) {
     this(scope, id, null);
@@ -29,7 +30,7 @@ public class AdminApiStack extends Stack {
     // IMPORT DynamoDB table (DO NOT recreate)
     // ------------------------------------------------------------
     ITable experiencesTable =
-        Table.fromTableName(this, "ExperiencesTable", ExperiencesStack.EXPERIENCES_TABLE_NAME);
+        Table.fromTableName(this, "ExperiencesTable", PortfolioStack.EXPERIENCES_TABLE_NAME);
 
     // ------------------------------------------------------------
     // Admin Lambda: WRITE ONLY
@@ -45,7 +46,7 @@ public class AdminApiStack extends Stack {
             .environment(
                 Map.of(
                     "TABLE_NAME", experiencesTable.getTableName(),
-                    "FRONTEND_ORIGIN", Fn.importValue("FrontendCloudFrontUrl")))
+                    "FRONTEND_ORIGIN", FRONTEND_URL))
             .build();
 
     // WRITE permissions only
@@ -62,7 +63,7 @@ public class AdminApiStack extends Stack {
                     .environment(
                             Map.of(
                                     "TABLE_NAME", experiencesTable.getTableName(),
-                                    "FRONTEND_ORIGIN", Fn.importValue("FrontendCloudFrontUrl")))
+                                    "FRONTEND_ORIGIN", FRONTEND_URL))
                     .build();
 
     // WRITE permissions only
@@ -79,7 +80,7 @@ public class AdminApiStack extends Stack {
                     .environment(
                             Map.of(
                                     "TABLE_NAME", experiencesTable.getTableName(),
-                                    "FRONTEND_ORIGIN", Fn.importValue("FrontendCloudFrontUrl")))
+                                    "FRONTEND_ORIGIN", FRONTEND_URL))
                     .build();
 
     experiencesTable.grantWriteData(createProjectFunction);
@@ -95,7 +96,7 @@ public class AdminApiStack extends Stack {
                     .environment(
                             Map.of(
                                     "TABLE_NAME", experiencesTable.getTableName(),
-                                    "FRONTEND_ORIGIN", Fn.importValue("FrontendCloudFrontUrl")))
+                                    "FRONTEND_ORIGIN", FRONTEND_URL))
                     .build();
 
     experiencesTable.grantWriteData(updateProjectFunction);
@@ -109,8 +110,7 @@ public class AdminApiStack extends Stack {
                     .apiDefinition(ApiDefinition.fromAsset("openapi/admin-api.yaml"))
                     .build();
 
-    String frontendUrl = Fn.importValue("FrontendCloudFrontUrl");
-    String quotedFrontendUrl = "'" + frontendUrl + "'";
+    String quotedFrontendUrl = "'" + FRONTEND_URL + "'";
 
     adminApi.addGatewayResponse(
         "Cors4xx",
@@ -196,12 +196,12 @@ public class AdminApiStack extends Stack {
                         .scopes(List.of(OAuthScope.OPENID, OAuthScope.EMAIL, OAuthScope.PROFILE))
                         .callbackUrls(
                             List.of(
-                                frontendUrl + "/auth/callback",
+                                FRONTEND_URL + "/auth/callback",
                                 "http://localhost:5173/auth/callback" // dev
                                 ))
                         .logoutUrls(
                             List.of(
-                                frontendUrl + "/", "http://localhost:5173/" // dev
+                                FRONTEND_URL + "/", "http://localhost:5173/" // dev
                                 ))
                         .build())
                 .build());

@@ -5,15 +5,13 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class GetProjectsHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -28,15 +26,9 @@ public class GetProjectsHandler
     public APIGatewayProxyResponseEvent handleRequest(
             APIGatewayProxyRequestEvent event, Context context) {
         try {
-            Map<String, String> names = Map.of("#type", "type");
-            Map<String, AttributeValue> values = Map.of(":type", AttributeValue.fromS("PROJECT"));
-
             ScanRequest request =
                     ScanRequest.builder()
                             .tableName(TABLE_NAME)
-                            .filterExpression("#type = :type")
-                            .expressionAttributeNames(names)
-                            .expressionAttributeValues(values)
                             .build();
 
             List<Map<String, AttributeValue>> items = dynamo.scan(request).items();
@@ -59,10 +51,11 @@ public class GetProjectsHandler
         project.name = getString(item, "name");
         project.description = getString(item, "description");
         project.organization = getString(item, "organization");
-        project.region = getString(item, "region");
         project.lifecycle = getString(item, "lifecycle");
         project.createdYear = getNumber(item, "createdYear");
         project.technologies = getStringList(item, "technologies");
+        project.access = getString(item, "access");
+        project.githubUrl = getString(item, "githubUrl");
         return project;
     }
 
@@ -114,9 +107,11 @@ public class GetProjectsHandler
         public String name;
         public String description;
         public String organization;
-        public String region;
         public String lifecycle;
         public Integer createdYear;
         public List<String> technologies;
+        public String access;
+        public String githubUrl;
+
     }
 }

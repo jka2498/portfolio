@@ -6,24 +6,30 @@ import { ExperienceDTO, Experience, ProjectDTO, Project, CvDownloadResponse, Pro
 // Transform API Experience to UI Experience
 function adaptExperience(dto: ExperienceDTO): Experience {
   const isCurrent = !dto.endYear;
-  
-  // Create bullet points from description string (splitting by newlines or periods if simple string)
-  const descriptionPoints = dto.description 
-    ? dto.description.split(/(?:\r\n|\r|\n)/g).filter(line => line.trim().length > 0)
-    : ["No details provided."];
+  const responsibilities = dto.responsibilities?.filter(item => item.trim().length > 0);
+
+  // Prefer explicit responsibilities list; fallback to description string.
+  const descriptionPoints = responsibilities && responsibilities.length > 0
+    ? responsibilities
+    : (dto.description
+        ? dto.description.split(/(?:\r\n|\r|\n)/g).filter(line => line.trim().length > 0)
+        : ["No details provided."]);
 
   return {
     id: dto.id || `i-${Math.random().toString(36).substr(2, 9)}`,
     role: dto.role,
     company: dto.company,
-    type: dto.focus ? `${dto.focus.toLowerCase().replace(/\s+/g, '.')}.large` : 'general.t3.medium',
+    type: dto.instanceType || 'general.t3.medium',
     state: (dto.state?.toLowerCase() as any) || (isCurrent ? 'running' : 'stopped'),
-    az: 'eu-west-1a', // Default region metaphor
+    az: dto.az || 'eu-west-1a',
     launchTime: `${dto.startYear || 'Unknown'} - ${dto.endYear || 'Present'}`,
     description: descriptionPoints,
     tags: {
       'Name': `${dto.company} - ${dto.role}`,
-      'Focus': dto.focus || 'General Engineering',
+      'InstanceType': dto.instanceType || 'general.t3.medium',
+      'AvailabilityZone': dto.az || 'eu-west-1a',
+      'Technologies': dto.technologies?.join(', ') || 'General Engineering',
+      'Responsibilities': responsibilities?.join('; ') || 'Not specified',
       'Role': dto.role,
       'CostCenter': dto.company
     }
@@ -44,18 +50,20 @@ function adaptProject(dto: ProjectDTO): Project {
   return {
     bucketName: dto.name.toLowerCase().replace(/\s+/g, '-'),
     region: dto.region || 'eu-west-1',
-    access: dto.organization ? 'Private' : 'Public',
+    access: dto.access === 'PUBLIC' ? 'Public' : dto.access === 'PRIVATE' ? 'Private' : (dto.organization ? 'Private' : 'Public'),
     lastModified: `${dto.createdYear || '2024'}-Present`,
     size: 'Standard',
     description: dto.description || 'No description provided.',
     arn: `arn:jan:s3:::${dto.name.toLowerCase().replace(/\s+/g, '-')}`,
     creationDate: new Date(dto.createdYear ? `${dto.createdYear}-01-01` : Date.now()).toUTCString(),
     objects: mockObjects,
+    githubUrl: dto.githubUrl,
     tags: {
       'Service': dto.serviceType || 'S3',
       'Lifecycle': dto.lifecycle,
       'Organization': dto.organization || 'Personal',
-      'Stack': techStack
+      'Stack': techStack,
+      'GitHub': dto.githubUrl || 'Not linked'
     }
   };
 }

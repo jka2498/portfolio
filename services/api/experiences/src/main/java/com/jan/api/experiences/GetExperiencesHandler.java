@@ -5,13 +5,12 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 
 public class GetExperiencesHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -27,14 +26,9 @@ public class GetExperiencesHandler
             APIGatewayProxyRequestEvent event, Context context) {
 
         try {
-            Map<String, String> names = Map.of("#type", "type");
-            Map<String, AttributeValue> values = Map.of(":project", AttributeValue.fromS("PROJECT"));
             ScanRequest request =
                     ScanRequest.builder()
                             .tableName(TABLE_NAME)
-                            .filterExpression("attribute_not_exists(#type) OR #type <> :project")
-                            .expressionAttributeNames(names)
-                            .expressionAttributeValues(values)
                             .build();
 
             List<Map<String, AttributeValue>> items = dynamo.scan(request).items();
@@ -67,34 +61,58 @@ public class GetExperiencesHandler
                 .withBody(body);
     }
 
-    private Experience mapExperience(Map<String, AttributeValue> item) {
-        Experience experience = new Experience();
-        experience.id = getString(item, "id");
-        experience.role = getString(item, "role");
-        experience.company = getString(item, "company");
-        experience.state = getString(item, "state");
-        experience.startYear = getNumber(item, "startYear");
-        return experience;
-    }
+  private Experience mapExperience(Map<String, AttributeValue> item) {
+    Experience experience = new Experience();
+    experience.id = getString(item, "id");
+    experience.role = getString(item, "role");
+    experience.company = getString(item, "company");
+    experience.state = getString(item, "state");
+    experience.startYear = getNumber(item, "startYear");
+    experience.endYear = getNumber(item, "endYear");
+    experience.instanceType = getString(item, "instanceType");
+    experience.technologies = getStringList(item, "technologies");
+    experience.responsibilities = getStringList(item, "responsibilities");
+    experience.az = getString(item, "az");
+    return experience;
+  }
 
     private String getString(Map<String, AttributeValue> item, String key) {
         AttributeValue value = item.get(key);
-        return value != null ? value.s() : null;
-    }
+    return value != null ? value.s() : null;
+  }
 
-    private Integer getNumber(Map<String, AttributeValue> item, String key) {
-        AttributeValue value = item.get(key);
-        if (value == null || value.n() == null) {
-            return null;
-        }
-        return Integer.valueOf(value.n());
+  private Integer getNumber(Map<String, AttributeValue> item, String key) {
+    AttributeValue value = item.get(key);
+    if (value == null || value.n() == null) {
+      return null;
     }
+    return Integer.valueOf(value.n());
+  }
 
-    static class Experience {
-        public String id;
-        public String role;
-        public String company;
-        public String state;
-        public Integer startYear;
+  private List<String> getStringList(Map<String, AttributeValue> item, String key) {
+    AttributeValue value = item.get(key);
+    if (value == null || value.l() == null) {
+      return null;
     }
+    List<String> results = new ArrayList<>();
+    for (AttributeValue entry : value.l()) {
+      if (entry.s() != null) {
+        results.add(entry.s());
+      }
+    }
+    return results;
+  }
+
+  static class Experience {
+    public String id;
+    public String role;
+    public String company;
+    public String state;
+    public Integer startYear;
+    public Integer endYear;
+    public String instanceType;
+    public List<String> technologies;
+    public List<String> responsibilities;
+    public String az;
+  }
 }

@@ -23,15 +23,17 @@ import java.util.Map;
 import static software.amazon.awscdk.services.apigatewayv2.CorsHttpMethod.GET;
 import static software.amazon.awscdk.services.apigatewayv2.CorsHttpMethod.OPTIONS;
 
-public class ExperiencesStack extends Stack {
+public class PortfolioStack extends Stack {
 
   public static final String EXPERIENCES_TABLE_NAME = "PortfolioExperiences";
+  public static final String PROJECTS_TABLE_NAME = "PortfolioProjects";
+  private static final String FRONTEND_URL = "https://www.jandrzejczyk.dev";
 
-  public ExperiencesStack(final Construct scope, final String id) {
+  public PortfolioStack(final Construct scope, final String id) {
     this(scope, id, null);
   }
 
-  public ExperiencesStack(final Construct scope, final String id, final StackProps props) {
+  public PortfolioStack(final Construct scope, final String id, final StackProps props) {
     super(scope, id, props);
 
     // ------------------------------------------------------------
@@ -44,6 +46,22 @@ public class ExperiencesStack extends Stack {
                     .billingMode(BillingMode.PAY_PER_REQUEST)
                     .removalPolicy(RemovalPolicy.RETAIN)
                     .build();
+
+    // ------------------------------------------------------------
+    // DynamoDB: PortfolioProjects
+    // ------------------------------------------------------------
+
+    Table projectsTable =
+            Table.Builder.create(this, "ProjectsTable")
+                    .tableName(PROJECTS_TABLE_NAME)
+                    .partitionKey(Attribute.builder().name("id").type(AttributeType.STRING).build())
+                    .billingMode(BillingMode.PAY_PER_REQUEST)
+                    .removalPolicy(RemovalPolicy.RETAIN)
+                    .build();
+
+    // ------------------------------------------------------------
+    // S3 Bucket: CV Bucket
+    // ------------------------------------------------------------
 
     Bucket cvBucket =
             Bucket.Builder.create(this, "CvBucket")
@@ -67,10 +85,14 @@ public class ExperiencesStack extends Stack {
                                     "TABLE_NAME",
                                     experiencesTable.getTableName(),
                                     "FRONTEND_ORIGIN",
-                                    Fn.importValue("FrontendCloudFrontUrl")))
+                                    FRONTEND_URL))
                     .build();
 
     experiencesTable.grantReadData(getExperiencesFunction);
+
+    // ------------------------------------------------------------
+    // Lambda: GetProjects (READ ONLY)
+    // ------------------------------------------------------------
 
     Function getProjectsFunction =
             Function.Builder.create(this, "GetProjectsFunction")
@@ -83,12 +105,12 @@ public class ExperiencesStack extends Stack {
                     .environment(
                             Map.of(
                                     "TABLE_NAME",
-                                    experiencesTable.getTableName(),
+                                    projectsTable.getTableName(),
                                     "FRONTEND_ORIGIN",
-                                    Fn.importValue("FrontendCloudFrontUrl")))
+                                    FRONTEND_URL))
                     .build();
 
-    experiencesTable.grantReadData(getProjectsFunction);
+    projectsTable.grantReadData(getProjectsFunction);
 
     Function getCvDownloadUrlFunction =
             Function.Builder.create(this, "GetCvDownloadUrlFunction")
@@ -105,7 +127,7 @@ public class ExperiencesStack extends Stack {
                                     "CV_OBJECT_KEY",
                                     "cv/jan-andrzejczyk.pdf",
                                     "FRONTEND_ORIGIN",
-                                    Fn.importValue("FrontendCloudFrontUrl")))
+                                    FRONTEND_URL))
                     .build();
 
     cvBucket.grantRead(getCvDownloadUrlFunction, "cv/jan-andrzejczyk.pdf");
@@ -114,14 +136,12 @@ public class ExperiencesStack extends Stack {
     // Public API Gateway (HTTP API)
     // ------------------------------------------------------------
 
-    String frontendUrl = Fn.importValue("FrontendCloudFrontUrl");
-
     HttpApi api =
             HttpApi.Builder.create(this, "PortfolioApi")
                     .apiName("PortfolioApi")
             .corsPreflight(
                 CorsPreflightOptions.builder()
-                    .allowOrigins(List.of("http://localhost:5173", "http://localhost:3000", frontendUrl))
+                    .allowOrigins(List.of("http://localhost:5173", "http://localhost:3000", FRONTEND_URL))
                     .allowMethods(List.of(GET, OPTIONS))
                     .allowHeaders(List.of("*"))
                         .build())

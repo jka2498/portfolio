@@ -6,7 +6,7 @@ public class InfraApp {
     public static void main(final String[] args) {
         App app = new App();
 
-    new ExperiencesStack(app, "ExperiencesStack");
+    new PortfolioStack(app, "PortfolioStack");
     new FrontendStack(app, "FrontendStack");
     new AdminApiStack(app, "AdminApiStack");
 

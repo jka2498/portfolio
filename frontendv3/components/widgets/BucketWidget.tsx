@@ -54,18 +54,12 @@ const S3Widget: React.FC<S3WidgetProps> = ({ onProjectClick }) => {
                         <div className="text-cyan-500 font-medium text-sm group-hover:underline font-mono">
                             {proj.bucketName}
                         </div>
-                        <div className="text-xs text-gray-500 mt-1 flex gap-2">
-                            <span>{proj.region}</span>
-                            <span className="text-gray-600">•</span>
-                            <span>{proj.lastModified}</span>
-                        </div>
                     </div>
                </div>
-               <div className="flex flex-col items-end gap-1">
+               <div className="flex items-center">
                  <span className={`text-[10px] px-1.5 py-0.5 rounded border ${proj.access === 'Public' ? 'border-red-800 bg-red-900/20 text-red-400' : 'border-green-800 bg-green-900/20 text-green-400'}`}>
                     {proj.access}
                  </span>
-                 <span className="text-xs text-gray-600">{proj.size}</span>
                </div>
             </li>
           ))}

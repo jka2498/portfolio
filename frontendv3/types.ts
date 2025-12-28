@@ -7,10 +7,14 @@ export interface ExperienceDTO {
   startYear?: number;
   endYear?: number; // Added optional end year
   description?: string;
-  focus?: string;
+  instanceType?: string;
+  az?: string;
+  technologies?: string[];
+  responsibilities?: string[];
 }
 
 export type ProjectLifecycle = 'ACTIVE' | 'ARCHIVED';
+export type ProjectAccess = 'PUBLIC' | 'PRIVATE';
 export type ProjectServiceType = 'S3' | 'DynamoDB' | 'Lambda' | (string & {});
 
 export interface ProjectDTO {
@@ -20,9 +24,11 @@ export interface ProjectDTO {
   description?: string;
   organization?: string;
   region?: string;
+  access?: ProjectAccess;
   lifecycle: ProjectLifecycle;
   createdYear?: number;
   technologies?: string[];
+  githubUrl?: string;
 }
 
 export type CvDownloadResponse = {
@@ -62,6 +68,7 @@ export interface Project {
   creationDate: string;
   objects: ProjectObject[];
   tags: Record<string, string>;
+  githubUrl?: string;
 }
 
 export interface SkillPoint {

@@ -2,6 +2,7 @@ package com.jan;
 
 import java.util.List;
 import software.amazon.awscdk.*;
+import software.amazon.awscdk.services.certificatemanager.Certificate;
 import software.amazon.awscdk.services.cloudfront.BehaviorOptions;
 import software.amazon.awscdk.services.cloudfront.Distribution;
 import software.amazon.awscdk.services.cloudfront.ErrorResponse;
@@ -14,6 +15,8 @@ import software.amazon.awscdk.services.s3.deployment.Source;
 import software.constructs.Construct;
 
 public class FrontendStack extends Stack {
+
+  private static final String FRONTEND_DOMAIN = "www.jandrzejczyk.dev";
 
   public FrontendStack(final Construct scope, final String id) {
     this(scope, id, null);
@@ -35,7 +38,7 @@ public class FrontendStack extends Stack {
     // ------------------------------------------------------------
     // CloudFront distribution
     // ------------------------------------------------------------
-    Distribution distribution =
+    Distribution.Builder distributionBuilder =
         Distribution.Builder.create(this, "FrontendDistribution")
             .defaultBehavior(
                 BehaviorOptions.builder()
@@ -56,8 +59,16 @@ public class FrontendStack extends Stack {
                         .responseHttpStatus(200)
                         .responsePagePath("/index.html")
                         .ttl(Duration.seconds(0))
-                        .build()))
-            .build();
+                        .build()));
+
+    String certificateArn = (String) this.getNode().tryGetContext("frontendCertificateArn");
+    if (certificateArn != null && !certificateArn.isBlank()) {
+      distributionBuilder
+          .certificate(Certificate.fromCertificateArn(this, "FrontendCertificate", certificateArn))
+          .domainNames(List.of(FRONTEND_DOMAIN));
+    }
+
+    Distribution distribution = distributionBuilder.build();
 
     // ------------------------------------------------------------
     // Deploy frontend build output
@@ -69,9 +80,5 @@ public class FrontendStack extends Stack {
         .distributionPaths(List.of("/*"))
         .build();
 
-    CfnOutput.Builder.create(this, "FrontendCloudFrontUrl")
-        .value("https://" + distribution.getDistributionDomainName())
-        .exportName("FrontendCloudFrontUrl")
-        .build();
   }
 }
