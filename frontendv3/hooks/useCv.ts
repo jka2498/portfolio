@@ -1,24 +1,23 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { fetchCvDownloadUrl } from "../api/services";
 
 export function useCv() {
   const [cvUrl, setCvUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const url = await fetchCvDownloadUrl();
-        setCvUrl(url);
-      } catch (err) {
-        console.error("Failed to load CV URL", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loadCvUrl = async () => {
+    setLoading(true);
+    try {
+      const url = await fetchCvDownloadUrl();
+      setCvUrl(url);
+      return url;
+    } catch (err) {
+      console.error("Failed to load CV URL", err);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    void load();
-  }, []);
-
-  return { cvUrl, loading };
+  return { cvUrl, loading, loadCvUrl };
 }

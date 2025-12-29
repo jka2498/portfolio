@@ -4,30 +4,37 @@ import { useCv } from '../../hooks/useCv';
 import { Shield, Users, Key, AlertTriangle, Download, Linkedin, ExternalLink, Loader2 } from 'lucide-react';
 
 const IAMWidget: React.FC = () => {
-  const { cvUrl, loading } = useCv();
+  const { cvUrl, loading, loadCvUrl } = useCv();
+
+  const handleDownload = async (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (cvUrl) {
+      return;
+    }
+
+    event.preventDefault();
+    const url = await loadCvUrl();
+    if (url) {
+      window.open(url, '_blank', 'noreferrer');
+    }
+  };
 
   return (
     <Card 
         title="IAM Security (About)"
         headerAction={
-            loading ? (
-                <div className="flex items-center gap-1 text-gray-500 text-xs px-2">
-                    <Loader2 size={12} className="animate-spin" />
-                    <span>Loading creds...</span>
-                </div>
-            ) : (
-                <a 
-                    href={cvUrl || "#"} 
-                    download={cvUrl ? undefined : "CV.pdf"} // If it's a signed URL, let browser handle headers, else fallback
-                    target="_blank"
-                    rel="noreferrer"
-                    className={`flex items-center gap-1.5 bg-[#161e2d] hover:bg-[#232f3e] text-gray-300 hover:text-white text-xs font-bold py-1.5 px-3 rounded border border-gray-600 transition-colors ${!cvUrl ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    title="Download CV"
-                >
-                    <Download size={15} />
-                    <span>CV Report</span>
-                </a>
-            )
+            <a
+                href={cvUrl || "#"}
+                download={cvUrl ? undefined : "CV.pdf"} // If it's a signed URL, let browser handle headers, else fallback
+                target="_blank"
+                rel="noreferrer"
+                onClick={handleDownload}
+                className={`flex items-center gap-1.5 bg-[#161e2d] hover:bg-[#232f3e] text-gray-300 hover:text-white text-xs font-bold py-1.5 px-3 rounded border border-gray-600 transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                title="Download CV"
+                aria-disabled={loading}
+            >
+                {loading ? <Loader2 size={12} className="animate-spin" /> : <Download size={15} />}
+                <span>CV Report</span>
+            </a>
         }
     >
       <div className="space-y-4">
